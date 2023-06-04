@@ -20,11 +20,14 @@ class ShopWizardException(Exception):
 
 
 class WeatherService:
+    # This is a class that provides weather-related functionality.
     GEO_URL = os.getenv('GEO_URL')
     WEATHER_URL = os.getenv('WEATHER_URL')
 
     @staticmethod
     def get_geo_data(city_name):
+        # This static method retrieves geographic data for a given city name by making a request to the specified
+        # GEO_URL. It returns the JSON response containing the geo data.
         params = {
             'name': city_name
         }
@@ -37,6 +40,8 @@ class WeatherService:
 
     @staticmethod
     def get_current_weather_by_geo_data(lat, lon):
+        # This static method retrieves the current weather data for a given latitude and longitude by making a request
+        # to the specified WEATHER_URL. It returns the JSON response containing the current weather data.
         params = {
             'latitude': lat,
             'longitude': lon,
@@ -49,6 +54,8 @@ class WeatherService:
 
     @staticmethod
     def get_rain_status(city_name):
+        # This static method retrieves the rain status for a given city name. It uses the get_geo_data() and
+        # get_current_weather_by_geo_data() methods to get the necessary data and returns the rain status.
         geo_data = WeatherService.get_geo_data(city_name)
         if not geo_data:
             raise WeatherServiceException('City not found')
@@ -60,8 +67,11 @@ class WeatherService:
 
 
 class ShopWizardService:
+    # This is a class that provides functionality related to a shopping list.
     @staticmethod
     def create_shop_list(user_id, list_name):
+        # This static method creates a new shop list for a user with the specified user ID and list name. It adds the
+        # shop list to the database.
         user = User.query.get(user_id)
         if user:
             shop_list = ShopList(user_id=user_id, list_name=list_name)
@@ -72,6 +82,8 @@ class ShopWizardService:
 
     @staticmethod
     def remove_shop_list(user_id, list_name):
+        # This static method removes a shop list with the specified user ID and list name. It deletes the shop list
+        # from the database.
         user = User.query.get(user_id)
         if user:
             shop_list = ShopList.query.filter_by(user_id=user_id, list_name=list_name).first()
@@ -85,6 +97,8 @@ class ShopWizardService:
 
     @staticmethod
     def edit_shop_list(user_id, old_list_name, new_list_name):
+        # This static method edits the name of a shop list with the specified user ID and old list name. It updates the
+        # shop list name in the database.
         user = User.query.get(user_id)
         if user:
             shop_list = ShopList.query.filter_by(user_id=user_id, list_name=old_list_name).first()
@@ -98,6 +112,8 @@ class ShopWizardService:
 
     @staticmethod
     def add_item_to_list(user_id, list_name, item):
+        # This static method adds an item to a shop list with the specified user ID and list name. It creates a new
+        # item and associates it with the shop list in the database.
         user = User.query.get(user_id)
         if user:
             shop_list = ShopList.query.filter_by(user_id=user_id, list_name=list_name).first()
@@ -112,6 +128,8 @@ class ShopWizardService:
 
     @staticmethod
     def show_list_items(user_id, list_name):
+        # This static method retrieves the items in a shop list with the specified user ID and list name. It returns
+        # a list of item names.
         user = User.query.get(user_id)
         if user:
             shop_list = ShopList.query.filter_by(user_id=user_id, list_name=list_name).first()
@@ -125,6 +143,8 @@ class ShopWizardService:
 
     @staticmethod
     def remove_item_from_list(user_id, list_name, item):
+        # This static method removes an item from a shop list with the specified user ID, list name, and item name.
+        # It deletes the item from the database.
         user = User.query.get(user_id)
         if user:
             shop_list = ShopList.query.filter_by(user_id=user_id, list_name=list_name).first()
@@ -142,7 +162,9 @@ class ShopWizardService:
             raise ShopWizardException(f'User with ID {user_id} not found.')
 
     @staticmethod
-    def remove_items_from_list(user_id, list_name):
+    def remove_items_list(user_id, list_name):
+        # This static method removes all items from a shop list with the specified user ID and list name. It deletes
+        # all items associated with the shop list from the database.
         user = User.query.get(user_id)
         if user:
             shop_list = ShopList.query.filter_by(user_id=user_id, list_name=list_name).first()
@@ -158,8 +180,10 @@ class ShopWizardService:
 
 
 class ContactBookService:
+    # This is a class that provides functionality related to a contact book.
     @staticmethod
     def status(user_id):
+        # This static method retrieves the number of contacts in the contact book for a user with the specified user ID.
         user = User.query.get(user_id)
         if user:
             contact_count = ContactBook.query.filter_by(user_id=user_id).count()
@@ -169,6 +193,8 @@ class ContactBookService:
 
     @staticmethod
     def list_of_contacts(user_id):
+        # This static method retrieves the list of contacts in the contact book for a user with the specified user ID.
+        # It returns a formatted string listing the contacts.
         user = User.query.get(user_id)
         if user:
             contacts = ContactBook.query.filter_by(user_id=user_id).all()
@@ -179,33 +205,39 @@ class ContactBookService:
             raise ContactBookException(f'User with ID {user_id} not found.')
 
     @staticmethod
-    def show_contact(user_id, contact_name, last_name):
+    def show_contact(user_id, first_name, last_name):
+        # This static method retrieves a specific contact from the contact book for a user with the specified user ID,
+        # first name and last name.
         user = User.query.get(user_id)
         if user:
-            contact = ContactBook.query.filter_by(user_id=user_id, first_name=contact_name, last_name=last_name).first()
+            contact = ContactBook.query.filter_by(user_id=user_id, first_name=first_name, last_name=last_name).first()
             if contact:
-                return contact  # Return the contact object
+                return contact
             else:
-                raise ContactBookException(f'Contact "{contact_name}" not found.')
+                raise ContactBookException(f'Contact "{first_name}" not found.')
         else:
             raise ContactBookException(f'User with ID {user_id} not found.')
 
     @staticmethod
-    def delete_contact(user_id, contact_name, last_name):
+    def delete_contact(user_id, first_name, last_name):
+        # This static method deletes a specific contact from the contact book for a user with the specified user ID,
+        # first name and last name.
         user = User.query.get(user_id)
         if user:
-            contact = ContactBook.query.filter_by(user_id=user_id, first_name=contact_name, last_name=last_name).first()
+            contact = ContactBook.query.filter_by(user_id=user_id, first_name=first_name, last_name=last_name).first()
             if contact:
                 db.session.delete(contact)
                 db.session.commit()
-                return f"Contact '{contact_name}' has been deleted."
+                return f"Contact '{first_name}' has been deleted."
             else:
-                raise ContactBookException(f'Contact "{contact_name}" not found in your contact book.')
+                raise ContactBookException(f'Contact "{first_name}" not found in your contact book.')
         else:
             raise ContactBookException(f'User with ID {user_id} not found.')
 
     @staticmethod
     def add_contact(user_id, first_name, last_name, phone_number):
+        # This static method adds a new contact to the contact book for a user with the specified user ID, first name,
+        # last name and phone number.
         user = User.query.get(user_id)
         if user:
             contact = ContactBook.query.filter_by(user_id=user_id, first_name=first_name, last_name=last_name).first()

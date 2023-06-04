@@ -23,6 +23,7 @@ class TelegramHandler:
         self.user = User.query.get(user_id)
 
     def send_markup_message(self, text, markup):
+        # Sends a message with a custom markup to the user
         data = {
             'chat_id': self.user.id,
             'text': text,
@@ -31,6 +32,7 @@ class TelegramHandler:
         requests.post(f'{TG_BASE_URL}{BOT_TOKEN}/sendMessage', json=data)
 
     def send_message(self, text):
+        # Sends a simple text message to the user
         data = {
             'chat_id': self.user.id,
             'text': text
@@ -39,6 +41,7 @@ class TelegramHandler:
 
     @staticmethod
     def set_suggestions(commands):
+        # Sets the suggestions for the user's input by providing a list of available commands
         data = {
             'commands': commands
         }
@@ -47,6 +50,7 @@ class TelegramHandler:
 
 class MessageHandler(TelegramHandler):
     def __init__(self, data):
+        # Initializes the TelegramHandler class with the user ID and retrieves the corresponding user from the database.
         super().__init__(data['from']['id'])
         self.user = User(**data['from'])
         self.text = data.get('text')
@@ -54,12 +58,13 @@ class MessageHandler(TelegramHandler):
 
         user = User.query.filter_by(id=self.user_id).first()
         if not user:
-            # Create a new User instance and save it to the database
             new_user = User(id=self.user_id)
             db.session.add(new_user)
             db.session.commit()
 
     def handle(self):
+        # Handles the received message by parsing the text and performing different actions based on the command or
+        # input, including interacting with the ShopWizardService, ContactBookService, and WeatherService.
         text_parts = self.text.split()
         if len(text_parts) > 1 and text_parts[0] == '/weather':
             self.city = ' '.join(text_parts[1:])
@@ -107,13 +112,8 @@ class MessageHandler(TelegramHandler):
         elif text_parts[0] == '/remove_list':
             try:
                 list_name = text_parts[1]
-
-                # Remove the items from the 'item' table
-                ShopWizardService.remove_items_from_list(self.user_id, list_name)
-
-                # Remove the shop list from the 'shop_lists' table
+                ShopWizardService.remove_items_list(self.user_id, list_name)
                 ShopWizardService.remove_shop_list(self.user_id, list_name)
-
                 self.send_message(f'Shop list "{list_name}" and its items removed successfully!')
             except ShopWizardException as e:
                 self.send_message(str(e))
@@ -219,6 +219,7 @@ class MessageHandler(TelegramHandler):
                     self.send_message(f'Contact "{first_name} {last_name}" not found.')
             except ContactBookException as e:
                 self.send_message(str(e))
+
         # WeatherService commands
         elif text_parts[0] == '/weather':
             try:
@@ -251,11 +252,15 @@ class MessageHandler(TelegramHandler):
 
 class CallBackHandler(TelegramHandler):
     def __init__(self, data):
+        # Initializes the CallBackHandler class with the received callback data, including the user ID and callback
+        # information.
         super().__init__(data['from']['id'])
         self.user = User(**data.get('from'))
         self.callback_data = json.loads(data.get('data'))
 
     def handle(self):
+        # Handles the received callback by parsing the callback data and performing different actions based on the
+        # callback type, including interacting with the ShopWizardService and WeatherService.
         callback_type = self.callback_data.pop('type')
         if '/create_list' in self.callback_data:
             try:
@@ -268,14 +273,9 @@ class CallBackHandler(TelegramHandler):
         elif '/remove_list' in self.callback_data:
             try:
                 user_id = self.user.id
-                list_name = self.callback_data.split()[1]  # Extract the list name from the callback_data
-
-                # Remove the items from the 'item' table
-                ShopWizardService.remove_items_from_list(user_id, list_name)
-
-                # Remove the shop list from the 'shop_lists' table
+                list_name = self.callback_data.split()[1]
+                ShopWizardService.remove_items_list(user_id, list_name)
                 ShopWizardService.remove_shop_list(user_id, list_name)
-
                 self.send_message(f'Shop list "{list_name}" and its items removed successfully!')
             except ShopWizardException as e:
                 self.send_message(str(e))
@@ -327,5 +327,6 @@ class CallBackHandler(TelegramHandler):
 
     @staticmethod
     def formatting_weather(weather):
+        # Formats the weather information received from the WeatherService into a readable message.
         formatted_weather = f'Current temperature in your city is {weather["temperature"]}°C.'
         return formatted_weather
