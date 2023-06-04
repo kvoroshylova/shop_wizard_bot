@@ -88,9 +88,9 @@ class MessageHandler(TelegramHandler):
         Contact Book Commands:
             /add - Add a new contact to your contact book. Usage: /add <first_name> <last_name> <contact_phone>
             /status - Show amount of contacts in your contact book. Usage: /status
-            /show - Show the contact from your contact book. Usage: /show <contact_name>
+            /show - Show the contact from your contact book. Usage: /show <first_name> <last_name>
             /list - Show the list of all your contacts. Usage: /list
-            /delete - Delete a contact from a contact book. Usage: /delete <contact_name>
+            /delete - Delete a contact from a contact book. Usage: /delete <first_name> <last_name>
 
         Replace <list_name>, <item>, <your_city>, <contact_name> with the actual names you want to use.'''
             self.send_message(commands_message)
@@ -118,6 +118,9 @@ class MessageHandler(TelegramHandler):
                 self.send_message(str(e))
         elif text_parts[0] == '/edit_list':
             try:
+                if len(text_parts) < 3:
+                    raise ShopWizardException(
+                        'Insufficient arguments. Please provide both the old list name and new list name.')
                 old_list_name = text_parts[1]
                 new_list_name = text_parts[2]
                 ShopWizardService.edit_shop_list(self.user_id, old_list_name, new_list_name)
@@ -126,6 +129,9 @@ class MessageHandler(TelegramHandler):
                 self.send_message(str(e))
         elif text_parts[0] == '/add_item':
             try:
+                if len(text_parts) < 3:
+                    raise ShopWizardException(
+                        'Insufficient arguments. Please provide list name and item name.')
                 list_name = text_parts[1]
                 item = ' '.join(text_parts[2:])
                 ShopWizardService.add_item_to_list(self.user_id, list_name, item)
@@ -145,6 +151,9 @@ class MessageHandler(TelegramHandler):
                 self.send_message(str(e))
         elif text_parts[0] == '/remove_item':
             try:
+                if len(text_parts) < 3:
+                    raise ShopWizardException(
+                        'Insufficient arguments. Please provide list name and item name.')
                 list_name = text_parts[1]
                 item = ' '.join(text_parts[2:])
                 ShopWizardService.remove_item_from_list(self.user_id, list_name, item)
@@ -153,8 +162,11 @@ class MessageHandler(TelegramHandler):
                 self.send_message(str(e))
 
         # ContactBookService commands
-        elif text_parts[0] == '/add' and len(text_parts) >= 4:
+        elif text_parts[0] == '/add':
             try:
+                if len(text_parts) < 4:
+                    raise ContactBookException(
+                        'Insufficient arguments. Please provide first name, last name and phone number.')
                 first_name = text_parts[1]
                 last_name = text_parts[2]
                 phone_number = text_parts[3]
@@ -164,8 +176,13 @@ class MessageHandler(TelegramHandler):
                 self.send_message(str(e))
         elif text_parts[0] == '/delete':
             try:
-                contact_name = ' '.join(text_parts[1:])
-                ContactBookService.delete(self.user_id, contact_name)
+                if len(text_parts) < 3:
+                    raise ContactBookException(
+                        'Insufficient arguments. Please provide both the first name and last name.')
+
+                contact_name = text_parts[1]
+                last_name = text_parts[2]
+                ContactBookService.delete(self.user_id, contact_name, last_name)
                 self.send_message(f'Contact "{contact_name}" deleted successfully!')
             except ContactBookException as e:
                 self.send_message(str(e))
@@ -184,20 +201,25 @@ class MessageHandler(TelegramHandler):
                     self.send_message('Your contact book is empty.')
             except ContactBookException as e:
                 self.send_message(str(e))
-        elif text_parts[0] == '/show' and len(text_parts) > 1:
+        elif text_parts[0] == '/show':
             try:
-                contact_name = ' '.join(text_parts[1:])
-                contact = ContactBookService.show(self.user_id, contact_name)
+                if len(text_parts) < 3:
+                    raise ContactBookException(
+                        'Insufficient arguments. Please provide both the first name and last name.')
+                contact_name = text_parts[1]
+                last_name = text_parts[2]
+                contact = ContactBookService.show(self.user_id, contact_name, last_name)
                 if contact:
-                    contact_info = f'Information about {contact.name}:\nName - {contact.name}, ' \
+                    contact_info = f'Information about {contact.first_name}:\n' \
+                                   f'Name - {contact.first_name} {contact.last_name}\n' \
                                    f'Phone number - {contact.phone_number}'
                     self.send_message(contact_info)
                 else:
-                    self.send_message(f'Contact "{contact_name}" not found.')
+                    self.send_message(f'Contact "{contact_name} {last_name}" not found.')
             except ContactBookException as e:
                 self.send_message(str(e))
         # WeatherService commands
-        elif WEATHER_TYPE == text_parts[0] or self.city in text_parts:
+        elif text_parts[0] == '/weather':
             try:
                 geo_data = WeatherService.get_geo_data(self.city)
                 buttons = []
@@ -205,7 +227,10 @@ class MessageHandler(TelegramHandler):
                     test_button = {
                         'text': f'{item.get("name")} - {item.get("country_code")}',
                         'callback_data': json.dumps({
-                            'type': WEATHER_TYPE, 'lat': item.get('latitude'), 'lon': item.get('longitude')})
+                            'type': '/weather_city',
+                            'lat': item.get('latitude'),
+                            'lon': item.get('longitude')
+                        })
                     }
                     buttons.append([test_button])
                 markup = {
@@ -283,15 +308,21 @@ class CallBackHandler(TelegramHandler):
                     self.send_message(f'List "{list_name}" is empty.')
             except ShopWizardException as e:
                 self.send_message(str(e))
-
-        elif callback_type == WEATHER_TYPE:
+        if callback_type == '/weather_city':
             try:
-                weather = WeatherService.get_current_weather_by_geo_data(**self.callback_data)
-                formatted_weather = self.formatting_weather(weather)
+                lat = self.callback_data.get('lat')
+                lon = self.callback_data.get('lon')
+                weather = WeatherService.get_current_weather_by_geo_data(lat, lon)
+                temperature = weather.get('temperature')
+                rain_status = weather.get('rain')
+                response_message = f'The current temperature in your city is {temperature}°C.\n'
+                if rain_status:
+                    response_message += 'It is currently raining in your city.'
+                else:
+                    response_message += 'There is no rain in your city at the moment.'
+                self.send_message(response_message)
             except WeatherServiceException as wse:
                 self.send_message(str(wse))
-            else:
-                self.send_message(formatted_weather)
 
     @staticmethod
     def formatting_weather(weather):

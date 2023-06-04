@@ -47,6 +47,17 @@ class WeatherService:
             raise WeatherServiceException('Cannot get geo data')
         return res.json().get('current_weather')
 
+    @staticmethod
+    def get_rain_status(city_name):
+        geo_data = WeatherService.get_geo_data(city_name)
+        if not geo_data:
+            raise WeatherServiceException('City not found')
+        lat = geo_data[0]['latitude']
+        lon = geo_data[0]['longitude']
+        weather = WeatherService.get_current_weather_by_geo_data(lat, lon)
+        rain_status = weather.get('rain', 'No rain')
+        return rain_status
+
 
 class ShopWizardService:
     @staticmethod
@@ -68,7 +79,7 @@ class ShopWizardService:
                 db.session.delete(shop_list)
                 db.session.commit()
             else:
-                raise ShopWizardException(f'Shop list "{list_name}" not found.')
+                raise ShopWizardException(f'Shop list "{list_name}" not found. Please try other name')
         else:
             raise ShopWizardException(f'User with ID {user_id} not found.')
 
@@ -81,7 +92,7 @@ class ShopWizardService:
                 shop_list.list_name = new_list_name
                 db.session.commit()
             else:
-                raise ShopWizardException(f'Shop list "{old_list_name}" not found.')
+                raise ShopWizardException(f'Shop list "{old_list_name}" not found. Please try other name')
         else:
             raise ShopWizardException(f'User with ID {user_id} not found.')
 
@@ -95,7 +106,7 @@ class ShopWizardService:
                 db.session.add(new_item)
                 db.session.commit()
             else:
-                raise ShopWizardException(f'Shop list "{list_name}" not found.')
+                raise ShopWizardException(f'Shop list "{list_name}" not found. Please try other name')
         else:
             raise ShopWizardException(f'User with ID {user_id} not found.')
 
@@ -108,7 +119,7 @@ class ShopWizardService:
                 items = Item.query.filter_by(list=shop_list).all()
                 return [item.name for item in items]
             else:
-                raise ShopWizardException(f'Shop list "{list_name}" not found.')
+                raise ShopWizardException(f'Shop list "{list_name}" not found. Please try other name.')
         else:
             raise ShopWizardException(f'User with ID {user_id} not found.')
 
@@ -123,9 +134,10 @@ class ShopWizardService:
                     db.session.delete(item_to_remove)
                     db.session.commit()
                 else:
-                    raise ShopWizardException(f'Item "{item}" not found in the list "{list_name}".')
+                    raise ShopWizardException(f'Item "{item}" not found in the list "{list_name}". '
+                                              f'Please try other name')
             else:
-                raise ShopWizardException(f'Shop list "{list_name}" not found.')
+                raise ShopWizardException(f'Shop list "{list_name}" not found. Please try other name')
         else:
             raise ShopWizardException(f'User with ID {user_id} not found.')
 
@@ -140,7 +152,7 @@ class ShopWizardService:
                     db.session.delete(item)
                 db.session.commit()
             else:
-                raise ShopWizardException(f'Shop list "{list_name}" not found.')
+                raise ShopWizardException(f'Shop list "{list_name}" not found. Please try other name')
         else:
             raise ShopWizardException(f'User with ID {user_id} not found.')
 
@@ -167,10 +179,10 @@ class ContactBookService:
             raise ContactBookException(f'User with ID {user_id} not found.')
 
     @staticmethod
-    def show(user_id, contact_name):
+    def show(user_id, contact_name, last_name):
         user = User.query.get(user_id)
         if user:
-            contact = ContactBook.query.filter_by(user_id=user_id, first_name=contact_name).first()
+            contact = ContactBook.query.filter_by(user_id=user_id, first_name=contact_name, last_name=last_name).first()
             if contact:
                 return contact  # Return the contact object
             else:
@@ -179,10 +191,10 @@ class ContactBookService:
             raise ContactBookException(f'User with ID {user_id} not found.')
 
     @staticmethod
-    def delete(user_id, contact_name):
+    def delete(user_id, contact_name, last_name):
         user = User.query.get(user_id)
         if user:
-            contact = ContactBook.query.filter_by(user_id=user_id, first_name=contact_name).first()
+            contact = ContactBook.query.filter_by(user_id=user_id, first_name=contact_name, last_name=last_name).first()
             if contact:
                 db.session.delete(contact)
                 db.session.commit()
@@ -196,7 +208,7 @@ class ContactBookService:
     def add(user_id, first_name, last_name, phone_number):
         user = User.query.get(user_id)
         if user:
-            contact = ContactBook.query.filter_by(user_id=user_id, first_name=first_name).first()
+            contact = ContactBook.query.filter_by(user_id=user_id, first_name=first_name, last_name=last_name).first()
             if contact:
                 raise ContactBookException(f'Contact "{first_name}" already exists in your contact book.')
             else:
