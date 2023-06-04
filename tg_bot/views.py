@@ -1,7 +1,5 @@
-from pprint import pprint
-import requests
 from tg_bot import app
-from flask import request, jsonify
+from flask import request
 from .handlers import MessageHandler, CallBackHandler
 
 
