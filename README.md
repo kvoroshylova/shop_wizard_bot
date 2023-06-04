@@ -26,10 +26,10 @@ necessary migration files.
 After completing the migration steps, you can use the command ```cd ..``` to move back to the previous directory 
 if needed.
 
-**Short description about files in this repository:**
+**Short description about files in this repository:**  
 ```__init__.py``` - The file serves as the entry point for the application, setting up the necessary configurations and 
-connecting different components together.
-```handlers.py``` - There are a few classes in this file: 
+connecting different components together.  
+```handlers.py``` - There are a few classes in this file:  
 1. The TelegramHandler class is responsible for sending messages and managing user information.
 2. The MessageHandler class handles incoming messages and performs various actions based on the message content. 
 It supports commands related to a shopping list, weather, and a contact book.
@@ -38,9 +38,9 @@ based on the callback type and data, such as creating a shopping list, removing 
 list, and retrieving weather information.
 Overall, this file provides the necessary functionality to handle user interactions and respond accordingly in a 
 Shop Wizard Bot.
-```models.py``` - Creates a models, such as User, ContactBook, ShopList, Item.
+```models.py``` - Creates a models, such as User, ContactBook, ShopList, Item.  
 ```services.py``` - Creates a services such as WeatherService, ShopWizardService, ContactBookService and 
-Custom Exceptions to them. 
+Custom Exceptions to them.   
 1. The WeatherService class handles weather-related operations. It includes methods to retrieve geographic data and 
 current weather information based on a city name or geographical coordinates.
 2. The ShopWizardService class provides functionality related to managing shopping lists. It includes methods to create,
@@ -49,5 +49,5 @@ remove, edit, and retrieve items from a user's shopping list.
 the contact book, list all contacts, show details of a specific contact, delete a contact, and add a new contact.
 Each service class has its own set of exception classes (WeatherServiceException, ShopWizardException, and 
 ContactBookException) to handle specific errors that may occur during service operations.
-```views.py``` - File contains the view function for the Shop Wizard Bot's webhook endpoint.
+```views.py``` - File contains the view function for the Shop Wizard Bot's webhook endpoint.  
 ```run.py``` - File is responsible for starting the Flask application and running the bot.
