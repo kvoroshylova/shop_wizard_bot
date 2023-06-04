@@ -17,7 +17,7 @@ method "POST" and send this ```http://api.telegram.org/bot<BOT_TOKEN>/setWebhook
 
 **How to apply migrations to use database(for macOS). All commands run in Terminal of your IDE:**
 
-1. ```cd tg_bot``` - move to the folder which contains the necessary Flask application code.
+1. ```cd tg_bot``` - Move to the folder which contains the necessary Flask application code.
 2. ```FLASK_APP=__init__.py flask db init``` - Initialize the database migration environment by generating the 
 necessary migration files.
 3. ```FLASK_APP=__init__.py flask db migrate``` - Create a new database migration.
