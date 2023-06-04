@@ -71,28 +71,29 @@ class MessageHandler(TelegramHandler):
                               "stay informed about the weather in your city. To get started enter '/commands'."
             self.send_message(welcome_message)
         elif text_parts[0] == '/commands':
-            commands_message = '''Hello! This is the help center of Shop Wizard Bot. Here you can see how to use commands:
+            commands_message = '''
+            Hello! This is the help center of Shop Wizard Bot. Here you can see how to use commands:
 
-        /commands - See all available commands
-        Show List Commands:
-            /create_list - Create a new shopping list. Usage: /create_list <list_name>
-            /remove_list - Remove an existing shopping list. Usage: /remove_list <list_name>
-            /edit_list - Rename a shopping list. Usage: /edit_list <old_list_name> <new_list_name>
-            /add_item - Add an item to a shopping list. Usage: /add_item <list_name> <item>
-            /show_items - Show items in a shopping list. Usage: /show_items <list_name>
-            /remove_item - Remove an item from a shopping list. Usage: /remove_item <list_name> <item>
+    /commands - See all available commands
+    Show List Commands:
+        /create_list - Create a new shopping list. Usage: /create_list <list_name>
+        /remove_list - Remove an existing shopping list. Usage: /remove_list <list_name>
+        /edit_list - Rename a shopping list. Usage: /edit_list <old_list_name> <new_list_name>
+        /add_item - Add an item to a shopping list. Usage: /add_item <list_name> <item>
+        /show_items - Show items in a shopping list. Usage: /show_items <list_name>
+        /remove_item - Remove an item from a shopping list. Usage: /remove_item <list_name> <item>
 
-        Weather Commands:
-            /weather - Get the weather for a city. Usage: /weather <your_city>
+    Weather Commands:
+        /weather - Get the weather for a city. Usage: /weather <your_city>
 
-        Contact Book Commands:
-            /add - Add a new contact to your contact book. Usage: /add <first_name> <last_name> <contact_phone>
-            /status - Show amount of contacts in your contact book. Usage: /status
-            /show - Show the contact from your contact book. Usage: /show <first_name> <last_name>
-            /list - Show the list of all your contacts. Usage: /list
-            /delete - Delete a contact from a contact book. Usage: /delete <first_name> <last_name>
+    Contact Book Commands:
+        /add - Add a new contact to your contact book. Usage: /add <first_name> <last_name> <contact_phone>
+        /status - Show amount of contacts in your contact book. Usage: /status
+        /show - Show the contact from your contact book. Usage: /show <first_name> <last_name>
+        /list - Show the list of all your contacts. Usage: /list
+        /delete - Delete a contact from a contact book. Usage: /delete <first_name> <last_name>
 
-        Replace <list_name>, <item>, <your_city>, <contact_name> with the actual names you want to use.'''
+    Replace <list_name>, <item_name>, <your_city>, <first_name>, <last_name> with the actual names you want to use.'''
             self.send_message(commands_message)
 
         # ShopWizardService operations
