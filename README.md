@@ -38,8 +38,6 @@ It supports commands related to a shopping list, weather, and a contact book.
 - The CallBackHandler class handles callback data received from inline keyboards in Telegram. It performs actions 
 based on the callback type and data, such as creating a shopping list, removing a shopping list, adding an item to a 
 list, and retrieving weather information.  
-Overall, this file provides the necessary functionality to handle user interactions and respond accordingly in a 
-Shop Wizard Bot.  
 
 ```models.py``` - Creates a models, such as User, ContactBook, ShopList, Item. 
 
