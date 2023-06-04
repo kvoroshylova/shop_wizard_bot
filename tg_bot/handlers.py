@@ -104,6 +104,9 @@ class MessageHandler(TelegramHandler):
         # ShopWizardService operations
         elif text_parts[0] == '/create_list':
             try:
+                if len(text_parts) < 2:
+                    raise ShopWizardException(
+                        'Insufficient arguments. Please provide list name.')
                 list_name = text_parts[1]
                 ShopWizardService.create_shop_list(self.user_id, list_name)
                 self.send_message(f'Shop list "{list_name}" created successfully!')
@@ -111,6 +114,9 @@ class MessageHandler(TelegramHandler):
                 self.send_message(str(e))
         elif text_parts[0] == '/remove_list':
             try:
+                if len(text_parts) < 2:
+                    raise ShopWizardException(
+                        'Insufficient arguments. Please provide list name.')
                 list_name = text_parts[1]
                 ShopWizardService.remove_items_list(self.user_id, list_name)
                 ShopWizardService.remove_shop_list(self.user_id, list_name)
@@ -141,6 +147,9 @@ class MessageHandler(TelegramHandler):
                 self.send_message(str(e))
         elif text_parts[0] == '/show_items':
             try:
+                if len(text_parts) < 2:
+                    raise ShopWizardException(
+                        'Insufficient arguments. Please provide list name.')
                 list_name = text_parts[1]
                 items = ShopWizardService.show_list_items(self.user_id, list_name)
                 if items:
