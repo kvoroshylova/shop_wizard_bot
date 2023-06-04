@@ -168,7 +168,7 @@ class ContactBookService:
             raise ContactBookException(f'User with ID {user_id} not found.')
 
     @staticmethod
-    def list(user_id):
+    def list_of_contacts(user_id):
         user = User.query.get(user_id)
         if user:
             contacts = ContactBook.query.filter_by(user_id=user_id).all()
@@ -179,7 +179,7 @@ class ContactBookService:
             raise ContactBookException(f'User with ID {user_id} not found.')
 
     @staticmethod
-    def show(user_id, contact_name, last_name):
+    def show_contact(user_id, contact_name, last_name):
         user = User.query.get(user_id)
         if user:
             contact = ContactBook.query.filter_by(user_id=user_id, first_name=contact_name, last_name=last_name).first()
@@ -191,7 +191,7 @@ class ContactBookService:
             raise ContactBookException(f'User with ID {user_id} not found.')
 
     @staticmethod
-    def delete(user_id, contact_name, last_name):
+    def delete_contact(user_id, contact_name, last_name):
         user = User.query.get(user_id)
         if user:
             contact = ContactBook.query.filter_by(user_id=user_id, first_name=contact_name, last_name=last_name).first()
@@ -205,7 +205,7 @@ class ContactBookService:
             raise ContactBookException(f'User with ID {user_id} not found.')
 
     @staticmethod
-    def add(user_id, first_name, last_name, phone_number):
+    def add_contact(user_id, first_name, last_name, phone_number):
         user = User.query.get(user_id)
         if user:
             contact = ContactBook.query.filter_by(user_id=user_id, first_name=first_name, last_name=last_name).first()

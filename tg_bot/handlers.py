@@ -171,8 +171,8 @@ class MessageHandler(TelegramHandler):
                 first_name = text_parts[1]
                 last_name = text_parts[2]
                 phone_number = text_parts[3]
-                ContactBookService.add(self.user_id, first_name, last_name, phone_number)
-                self.send_message(f'Contact "{first_name}" added successfully!')
+                ContactBookService.add_contact(self.user_id, first_name, last_name, phone_number)
+                self.send_message(f'Contact "{first_name} {last_name}" added successfully!')
             except ContactBookException as e:
                 self.send_message(str(e))
         elif text_parts[0] == '/delete':
@@ -181,10 +181,10 @@ class MessageHandler(TelegramHandler):
                     raise ContactBookException(
                         'Insufficient arguments. Please provide both the first name and last name.')
 
-                contact_name = text_parts[1]
+                first_name = text_parts[1]
                 last_name = text_parts[2]
-                ContactBookService.delete(self.user_id, contact_name, last_name)
-                self.send_message(f'Contact "{contact_name}" deleted successfully!')
+                ContactBookService.delete_contact(self.user_id, first_name, last_name)
+                self.send_message(f'Contact "{first_name} {last_name}" deleted successfully!')
             except ContactBookException as e:
                 self.send_message(str(e))
         elif text_parts[0] == '/status':
@@ -195,7 +195,7 @@ class MessageHandler(TelegramHandler):
                 self.send_message(str(e))
         elif text_parts[0] == '/list':
             try:
-                contacts = ContactBookService.list(self.user_id)
+                contacts = ContactBookService.list_of_contacts(self.user_id)
                 if contacts:
                     self.send_message(f'Your contacts:\n{contacts}')
                 else:
@@ -207,16 +207,16 @@ class MessageHandler(TelegramHandler):
                 if len(text_parts) < 3:
                     raise ContactBookException(
                         'Insufficient arguments. Please provide both the first name and last name.')
-                contact_name = text_parts[1]
+                first_name = text_parts[1]
                 last_name = text_parts[2]
-                contact = ContactBookService.show(self.user_id, contact_name, last_name)
+                contact = ContactBookService.show_contact(self.user_id, first_name, last_name)
                 if contact:
                     contact_info = f'Information about {contact.first_name}:\n' \
                                    f'Name - {contact.first_name} {contact.last_name}\n' \
                                    f'Phone number - {contact.phone_number}'
                     self.send_message(contact_info)
                 else:
-                    self.send_message(f'Contact "{contact_name} {last_name}" not found.')
+                    self.send_message(f'Contact "{first_name} {last_name}" not found.')
             except ContactBookException as e:
                 self.send_message(str(e))
         # WeatherService commands
