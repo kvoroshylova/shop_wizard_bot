@@ -30,14 +30,14 @@ if needed.
 ```__init__.py``` - The file serves as the entry point for the application, setting up the necessary configurations and 
 connecting different components together.  
 ```handlers.py``` - There are a few classes in this file:  
-1. The TelegramHandler class is responsible for sending messages and managing user information.
-2. The MessageHandler class handles incoming messages and performs various actions based on the message content. 
-It supports commands related to a shopping list, weather, and a contact book.
-3. The CallBackHandler class handles callback data received from inline keyboards in Telegram. It performs actions 
+- The TelegramHandler class is responsible for sending messages and managing user information.
+- The MessageHandler class handles incoming messages and performs various actions based on the message content. 
+It supports commands related to a shopping list, weather, and a contact book.  
+- The CallBackHandler class handles callback data received from inline keyboards in Telegram. It performs actions 
 based on the callback type and data, such as creating a shopping list, removing a shopping list, adding an item to a 
-list, and retrieving weather information.
+list, and retrieving weather information.  
 Overall, this file provides the necessary functionality to handle user interactions and respond accordingly in a 
-Shop Wizard Bot.
+Shop Wizard Bot.  
 ```models.py``` - Creates a models, such as User, ContactBook, ShopList, Item.  
 ```services.py``` - Creates a services such as WeatherService, ShopWizardService, ContactBookService and 
 Custom Exceptions to them.   
@@ -48,6 +48,6 @@ remove, edit, and retrieve items from a user's shopping list.
 3. The ContactBookService class offers services for managing a contact book. It includes methods to check the status of 
 the contact book, list all contacts, show details of a specific contact, delete a contact, and add a new contact.
 Each service class has its own set of exception classes (WeatherServiceException, ShopWizardException, and 
-ContactBookException) to handle specific errors that may occur during service operations.
+ContactBookException) to handle specific errors that may occur during service operations.  
 ```views.py``` - File contains the view function for the Shop Wizard Bot's webhook endpoint.  
-```run.py``` - File is responsible for starting the Flask application and running the bot.
+```run.py``` - File is responsible for starting the Flask application and running the bot.  
