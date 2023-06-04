@@ -39,9 +39,9 @@ It supports commands related to a shopping list, weather, and a contact book.
 based on the callback type and data, such as creating a shopping list, removing a shopping list, adding an item to a 
 list, and retrieving weather information.  
 
-```models.py``` - Creates a models, such as User, ContactBook, ShopList, Item. 
+```models.py``` - Creates the models, such as User, ContactBook, ShopList, Item. 
 
-```services.py``` - Creates a services such as WeatherService, ShopWizardService, ContactBookService and 
+```services.py``` - Creates the services such as WeatherService, ShopWizardService, ContactBookService and 
 Custom Exceptions to them.   
 1. The WeatherService class handles weather-related operations. It includes methods to retrieve geographic data and 
 current weather information based on a city name or geographical coordinates.
